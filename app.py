@@ -22,6 +22,16 @@ handler = WebhookHandler(
            default=os.environ.get('LINE_CHANNEL_SECRET'))
 )
 
+def get_source(event):
+    if event.source.type == 'user':
+        return {'line_bot_api':os.environ.get('line_bot_api', None), 'group_id':None, 'user_id':event.source.user_id}
+    elif event.source.type == 'group':
+        return {'line_bot_api':os.environ.get('line_bot_api', None), 'group_id':event.source.group_id, 'user_id':event.source.user_id}
+    elif event.source.type == 'room':
+        return {'line_bot_api':os.environ.get('line_bot_api', None), 'group_id':event.source.room_id, 'user_id':event.source.user_id}
+    else:
+        raise Exception('event.source.type:%s' % event.source.type)
+
 
 @app.route("/callback", methods=['POST'])
 def callback():
@@ -51,10 +61,16 @@ def handle_text_message(event):
             TextSendMessage(text='testing command')
         )
     elif event.message.text == '@all' :
-        member_ids_res = line_bot_api.get_group_member_ids(group_id)
-        profile = line_bot_api.get_group_member_profile(group_id, user_id)
+        member_ids_res = line_bot_api.get_group_member_ids(event.source.group_id)
+        profile = line_bot_api.get_group_member_profile(event.source.group_id, event.source.user_id)
+        message = ""
+        for prof in profile :
+            message += profile.display_name+" "
+        line_bot_api.reply_message(
+            event.reply_token, 
+            TextSendMessage(text=message)
     elif event.message.text == '!leave' :
-        line_bot_api.leave_group(group_id)
+        line_bot_api.leave_group(event.source.group_id)
 
 
 
