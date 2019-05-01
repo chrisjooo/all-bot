@@ -69,6 +69,7 @@ def handle_text_message(event):
         line_bot_api.reply_message(
             event.reply_token, 
             TextSendMessage(text=message)
+        )
     elif event.message.text == '!leave' :
         line_bot_api.leave_group(event.source.group_id)
 
