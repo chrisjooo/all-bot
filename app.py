@@ -45,10 +45,17 @@ def callback():
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_text_message(event):
-    line_bot_api.reply_message(
-        event.reply_token,
-        TextSendMessage(text=event.message.text)
-    )
+    if event.message.text == '!test' :
+        line_bot_api.reply_message(
+            event.reply_token,
+            TextSendMessage(text='testing command')
+        )
+    elif event.message.text == '@all' :
+        member_ids_res = line_bot_api.get_group_member_ids(group_id)
+        profile = line_bot_api.get_group_member_profile(group_id, user_id)
+    elif event.message.text == '!leave' :
+        line_bot_api.leave_group(group_id)
+
 
 
 
