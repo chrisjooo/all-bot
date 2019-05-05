@@ -22,8 +22,6 @@ handler = WebhookHandler(
            default=os.environ.get('LINE_CHANNEL_SECRET'))
 )
 
-echo = False
-
 def get_source(event):
     if event.source.type == 'user':
         return {'line_bot_api':os.environ.get('line_bot_api', None), 'group_id':None, 'user_id':event.source.user_id}
@@ -57,24 +55,18 @@ def callback():
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_text_message(event):
-    if echo == True :
-        if event.message.text == '!stop' :
-            echo = False
-        else : 
-            line_bot_api.reply_message(
-                event.reply_token,
-                TextSendMessage(text=event.message.text)
-            )
-    else :    
-        if event.message.text == '!test' :
-            line_bot_api.reply_message(
-                event.reply_token,
-                TextSendMessage(text='testing command')
-            )
-        elif event.message.text == '!echo' :
-            echo = True
-        elif event.message.text == '!leave' :
-            line_bot_api.leave_group(event.source.group_id)
+    if event.message.text == '!test' :
+        line_bot_api.reply_message(
+            event.reply_token,
+            TextSendMessage(text='testing command')
+        )
+    elif event.message.text == '!leave' :
+        line_bot_api.leave_group(event.source.group_id)
+    else :
+        line_bot_api.reply_message(
+            event.reply_token,
+            TextSendMessage(text=event.message.text)
+        )
 
 
 
