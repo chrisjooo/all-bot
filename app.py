@@ -60,16 +60,12 @@ def handle_text_message(event):
             event.reply_token,
             TextSendMessage(text='testing command')
         )
-    elif event.message.text == '@all' :
-        member_ids_res = line_bot_api.get_group_member_ids(event.source.group_id)
-        profile = line_bot_api.get_group_member_profile(event.source.group_id, event.source.user_id)
-        message = ""
-        for prof in profile :
-            message += profile.display_name+" "
-        line_bot_api.reply_message(
-            event.reply_token, 
-            TextSendMessage(text=message)
-        )
+    elif event.message.text == '!echo' :
+        while event.message.text != '!stop' :
+            line_bot_api.reply_message(
+                event.reply_token,
+                TextSendMessage(text=event.message.text)
+            )   
     elif event.message.text == '!leave' :
         line_bot_api.leave_group(event.source.group_id)
 
